@@ -8,5 +8,5 @@ About:
 Requirements:
 	SDL - http://www.libsdl.org/
 
-Resources
+Resources:
 	Shining Force Audio - http://www.fantasyanime.com/shiningforce/sfmusic.html
