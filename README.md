@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Game-Engine
 ======
 
@@ -14,4 +13,3 @@ Resources
 =======
 Engine
 ======
->>>>>>> 662184e6d4fc2cf6bfc4da8bdaa763deaf3108e0
