@@ -10,6 +10,3 @@ Requirements:
 
 Resources
 	Shining Force Audio - http://www.fantasyanime.com/shiningforce/sfmusic.html
-=======
-Engine
-======
