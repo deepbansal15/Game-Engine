@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Game-Engine
 ======
 
@@ -10,3 +11,7 @@ Requirements:
 
 Resources
 	http://www.fantasyanime.com/shiningforce/sfmusic.htm- Shining Force Audio
+=======
+Engine
+======
+>>>>>>> 662184e6d4fc2cf6bfc4da8bdaa763deaf3108e0
