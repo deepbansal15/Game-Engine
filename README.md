@@ -9,7 +9,7 @@ Requirements:
 	SDL - http://www.libsdl.org/
 
 Resources
-	http://www.fantasyanime.com/shiningforce/sfmusic.htm- Shining Force Audio
+	Shining Force Audio - http://www.fantasyanime.com/shiningforce/sfmusic.html
 =======
 Engine
 ======
