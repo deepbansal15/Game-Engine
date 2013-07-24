@@ -6,6 +6,7 @@
  */
 
 #include "SoundManager.h"
+#include <iostream>
 
 namespace TileEngine
 {
@@ -19,15 +20,15 @@ SoundManager::SoundManager()
 
     if(SDL_Init(SDL_INIT_AUDIO) == -1)
     {
-        fprintf(stderr, "Unable to initialize SDL Audio: %s\n", SDL_GetError());
-        exit(1);
+        std::cout << "Unable to initialize audio in SoundManager" << std::endl;
+        SDL_Quit();
     }
 
 	if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers))
 	{
-        fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError());
-	    exit(1);
-    }
+		std::cout << "Unable to open audio" << std::endl;
+		SDL_Quit();
+	}
 	soundVolume = 60;
 	musicVolume = 60;
 	setMusicVolume(musicVolume);
@@ -118,8 +119,8 @@ void SoundManager::playMusic(std::string name)
 
 	if (Mix_PlayMusic(music, -1) == -1)
 	{
-	    fprintf(stderr, "Unable to play music %s: %s\n", name.c_str(), Mix_GetError());
-    }
+		std::cout << "Couldn't play " << name << std::endl;
+	}
 }
 
 void SoundManager::pauseMusic()
@@ -157,7 +158,7 @@ void SoundManager::playSound(std::string name)
 	Mix_Chunk* sound = acquireSound(name);
 	if (Mix_PlayChannel( -1, sound, 0 ) == -1)
 	{
-	    fprintf(stderr, "Unable to play sound %s: %s\n", name.c_str(), Mix_GetError());
+		std::cout << "Couldn't play " << name << std::endl;
 	}
 }
 
@@ -166,6 +167,9 @@ Mix_Music* const SoundManager::acquireMusic(const std::string& fileName)
 	std::string absFileName = RESOURCE_DIR + AUDIO_DIR + fileName;
 	MusicIterator musicElement = musics.find(absFileName);
 
+	// If we've already loaded this resource, simply increment the counter
+	// in the tracker and return the surface
+	//
 	// Otherwise, load it and add it to the tracker with an initial count of 1
 	if (musicElement != musics.end())
 	{
@@ -181,7 +185,8 @@ Mix_Music* const SoundManager::acquireMusic(const std::string& fileName)
 		}
 		else
 		{
-			fprintf(stderr, "Failed to load music file %s: %s\n",absFileName.c_str(), Mix_GetError());
+            std::cout << Mix_GetError() << std::endl;
+			throw Exception("Failed to load file: " + absFileName);
 		}
 	}
 }
@@ -189,12 +194,18 @@ Mix_Music* const SoundManager::acquireMusic(const std::string& fileName)
 void SoundManager::releaseMusic(const std::string& fileName)
 {
 	std::string absFileName = RESOURCE_DIR + AUDIO_DIR + fileName;
+	// If the resource already exists, check its tracker count.
+	// If it is currently 1, we are removing the last handle to it
+	// so we need to free the resource and remove it from our map.
+	//
+	// Otherwise, just decrease the count in the tracker
 	MusicIterator musicElement = musics.find(absFileName);
 	if (musicElement != musics.end())
 	{
 		Mix_FreeMusic(musicElement->second);
 		musics.erase(musicElement);
 	}
+
 }
 
 Mix_Chunk* const SoundManager::acquireSound(const std::string& fileName)
@@ -202,6 +213,10 @@ Mix_Chunk* const SoundManager::acquireSound(const std::string& fileName)
 	std::string absFileName = RESOURCE_DIR + AUDIO_DIR + fileName;
 	SoundIterator soundElement = sounds.find(absFileName);
 
+	// If we've already loaded this resource, simply increment the counter
+	// in the tracker and return the surface
+	//
+	// Otherwise, load it and add it to the tracker with an initial count of 1
 	if (soundElement != sounds.end())
 	{
 		return soundElement->second;
@@ -216,7 +231,7 @@ Mix_Chunk* const SoundManager::acquireSound(const std::string& fileName)
 		}
 		else
 		{
-			fprintf(stderr, "Failed to load sound file %s: %s\n", absFileName.c_str(), Mix_GetError());
+			throw Exception("Failed to load file: " + absFileName);
 		}
 	}
 }
@@ -247,7 +262,9 @@ void SoundManager::addSound(std::string filename, std::string lookupStr)
 		{
 			if (soundIt->second == lookupStr)
 			{
-				fprintf(stderr, "Masking filename %s with lookup %s\n", filename.c_str(), lookupStr.c_str());
+				throw std::runtime_error(
+						"Masking filename " + lookupStr + " with lookup "
+								+ lookupStr);
 			}
 		}
 		LookUpIterator it = soundLookup.find(lookupStr);
@@ -280,7 +297,9 @@ void SoundManager::addMusic(std::string filename, std::string lookupStr)
 		{
 			if (musicIt->second == lookupStr)
 			{
-			    fprintf(stderr, "Masking filename %s with lookup %s\n", filename.c_str(), lookupStr.c_str());
+				throw std::runtime_error(
+						"Masking filename " + lookupStr + " with lookup "
+								+ lookupStr);
 			}
 		}
 

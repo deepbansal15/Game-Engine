@@ -13,11 +13,10 @@ namespace TileEngine
 World::World()
 {
 	frameCount = 0;
-    timerMsgDistance = 0;
 	seconds = NULL;
 	fpsDisplay = NULL;
-	player = NULL;
-    camera.setSpeed(6);
+	map = NULL;
+	camera.setSpeed(6);
 }
 
 World::~World()
@@ -25,18 +24,16 @@ World::~World()
 	clean();
 }
 
-bool World::init()
+bool World::init(std::string mapName)
 {
-     
-    player = new Player("green_ball.png", Window::screenWidth()/2 - 10, Window::screenHeight() - 40);
-    EntityMgr->registerEntity(player);
-
+	map = new TileMap(mapName);
+    EntityMgr->registerEntity(new MovingEntity("green_ball.png", 0, 0));
 	seconds = new Message(" ", "lazy.ttf", 16);
 	seconds->setX(Window::screenWidth() - seconds->getImage()->w);
 	fpsDisplay = new Message("", "lazy.ttf", 16);
 
-//	SoundMgr->playSound("beat.wav");
-    SoundMgr->playMusic("Attack.ogg");
+	//SoundMgr->playSound("beat.wav");
+    //SoundMgr->playMusic("Attack.mp3");
 	updateFPS.start();
 	timer.start();
 	calculateFPS();
@@ -46,25 +43,23 @@ bool World::init()
 
 void World::update()
 {
-    //Keep the timer from fluctuating
-    int timerMsgWidth =  seconds->getImage()->w;
-    timerMsgDistance = (timerMsgDistance > timerMsgWidth) ? timerMsgDistance: timerMsgWidth;
-    seconds->setX(Window::screenWidth() - timerMsgDistance);
-	
-    // Calculate Timer
+	seconds->setX(Window::screenWidth() - seconds->getImage()->w);
+
+	frameCount++;
+
 	std::stringstream time;
 	double ticks = round(timer.getTicks() / 100) / 10;
 	time << "Timer: " << ticks;
 	seconds->setMessage(time.str());
 	seconds->update();
 
-    //Framerate Shenanigans
-    frameCount++;
 	if (updateFPS.getTicks() > 1000)
 	{
 		calculateFPS();
 	}
 
+	int mapWidth = map->getMapWidthInPixels();
+	int mapHeight = map->getMapHeightInPixels();
 
 	std::map<int, TileEngine::Entity* >::iterator it;
 	for( it = EntityMgr->getEntityIter(); it != EntityMgr->getEntityEnd(); ++it)
@@ -79,9 +74,10 @@ void World::update()
 				it->second->processCollision(secondIt->second);
 			}
 		}
+        it->second->processCollision(map->cLayer());
+		it->second->lockToScreen(mapWidth, mapHeight);
 	}
-    
-    player->lockToScreen(Window::screenWidth(), Window::screenHeight());
+
 	//Loop through list checking for dead objects
 }
 
@@ -107,7 +103,11 @@ void World::handleEvents()
 	}
 
 	motion *= camera.getSpeed();
-//	camera.getPosition() += motion;
+	camera.getPosition() += motion;
+
+	int width = map->getMapWidthInPixels() - Window::screenWidth();
+	int height = map->getMapHeightInPixels() - Window::screenHeight();
+	camera.lockCamera(width, height);
 
 	std::map<int, TileEngine::Entity* >::iterator it;
 	for( it = EntityMgr->getEntityIter(); it != EntityMgr->getEntityEnd(); ++it)
@@ -118,22 +118,17 @@ void World::handleEvents()
 
 void World::draw(SDL_Surface* screen)
 {
+	map->draw(screen, camera);
+
 	std::map<int, TileEngine::Entity* >::iterator it;
 	for( it = EntityMgr->getEntityIter(); it != EntityMgr->getEntityEnd(); ++it)
 	{
 		it->second->draw(screen, camera);
 	}
-	ImageManagerInst->applySurface(
-            seconds->X(),
-            seconds->Y(),
-            seconds->getImage(),
+	ImageManagerInst->applySurface(seconds->X(), seconds->Y(), seconds->getImage(),
 			screen);
-
-	ImageManagerInst->applySurface(
-            fpsDisplay->X(),
-            fpsDisplay->Y(),
-			fpsDisplay->getImage(),
-            screen);
+	ImageManagerInst->applySurface(fpsDisplay->X(), fpsDisplay->Y(),
+			fpsDisplay->getImage(), screen);
 
 }
 
@@ -156,9 +151,10 @@ void World::clean()
 	{
 		delete fpsDisplay;
 	}
-    if (NULL != player)
-    {
-        delete player;
-    }
+	if (map != NULL)
+	{
+		delete map;
+	}
 }
+
 }

@@ -11,7 +11,6 @@
 #include "Singleton.h"
 #include "ResourceManager.h"
 #include <stdexcept>
-#include <cstdio>
 
 namespace TileEngine
 {

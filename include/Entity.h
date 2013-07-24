@@ -10,11 +10,14 @@
 
 #include "SDL/SDL.h"
 #include "ImageManager.h"
+#include "CollisionLayer.h"
 #include "Camera.h"
 #include "Vector2.h"
 
 namespace TileEngine
 {
+
+struct Telegram;
 
 class Entity
 {
@@ -26,10 +29,13 @@ public:
 
 	bool checkCollision(Entity*);
 	virtual void processCollision(const Entity*) = 0;
+    virtual void processCollision(const CollisionLayer *layer) = 0;
 
 	virtual void update() = 0;
 	virtual void draw(SDL_Surface* screen, Camera cam);
+
 	virtual void handleEvents() = 0;
+	virtual bool handleMessage(const Telegram& msg){ return false; }
 
 	void lockToScreen(int width, int height);
 

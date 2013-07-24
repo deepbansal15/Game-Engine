@@ -8,8 +8,6 @@
 #ifndef VECTOR2_H_
 #define VECTOR2_H_
 
-#include <stdio.h>
-
 namespace TileEngine
 {
 
@@ -31,11 +29,6 @@ public:
 
 	void operator*=(float num);
 	void operator/=(float num);
-
-    Vector2 operator+(float num);
-    Vector2 operator-(float num);
-    Vector2 operator*(float num);
-    Vector2 operator/(float num);
 
 	virtual ~Vector2();
 

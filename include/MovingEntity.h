@@ -10,19 +10,25 @@
 
 #include "Entity.h"
 #include "ImageManager.h"
+#include "InputManager.h"
+#include "CollisionLayer.h"
 #include <string>
-#include <cmath>
+#include "Window.h"
+#include <cstdlib>
+#include "Globals.h"
+
 namespace TileEngine
 {
 class MovingEntity: public Entity
 {
 public:
-	MovingEntity(std::string filename, int x, int y, float maxSpeed = 4);
+	MovingEntity(std::string filename, int x, int y, int maxSpeed = 8);
 	virtual ~MovingEntity();
 
-	virtual void update();
-	virtual void handleEvents();
-	virtual void processCollision(const Entity* entity);
+	void update();
+	void handleEvents();
+	void processCollision(const Entity* entity);
+    void processCollision(const CollisionLayer* layer);
 
 protected:
 	Vector2 velocity;
@@ -31,6 +37,7 @@ protected:
     float maxSpeed;
 
 private:
+    static const float GRAVITY;
     void capVelocity();
 };
 }

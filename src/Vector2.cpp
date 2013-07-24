@@ -85,30 +85,6 @@ void Vector2::operator/=(float num)
 	divide(num);
 }
 
-Vector2 Vector2::operator+(float num)
-{
-    return Vector2(X+num, Y+num);
-}
-
-Vector2 Vector2::operator-(float num)
-{
-    return Vector2(X-num, Y-num);
-}
-
-Vector2 Vector2::operator*(float num)
-{
-    return Vector2(X*num, Y*num);
-}
-Vector2 Vector2::operator/(float num)
-{
-    if(0 == num)
-    {
-        printf("Warning: Vector divide by 0.");
-    }
-	float tmpX = (0 == num) ? X : X / num;
-	float tmpY = (0 == num) ? Y : Y / num;
-    return Vector2(tmpX, tmpY);
-}
 
 void Vector2::add(const Vector2 &vect)
 {

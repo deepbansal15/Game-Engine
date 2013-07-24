@@ -13,12 +13,12 @@
 #include "Globals.h"
 #include "SoundManager.h"
 #include "ResourceManager.h"
+#include "TileMap.h"
 #include "Timer.h"
 #include "Message.h"
 #include "InputManager.h"
 #include "Window.h"
 #include "MovingEntity.h"
-#include "Player.h"
 #include "EntityManager.h"
 
 namespace TileEngine
@@ -30,7 +30,7 @@ public:
 	World();
 	virtual ~World();
 
-	bool init();
+	bool init(std::string mapName);
 	void update();
 	void handleEvents();
 	void draw(SDL_Surface* screen);
@@ -40,13 +40,12 @@ private:
 	void calculateFPS();
 
 	int frameCount;
-    int timerMsgDistance;
 	Message* seconds;
 	Message* fpsDisplay;
 	Timer updateFPS;
 	Timer timer;
 	Camera camera;
-    Player* player;
+	TileMap*  map;
 };
 }
 

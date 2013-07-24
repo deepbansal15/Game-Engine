@@ -29,7 +29,7 @@ bool Game::init(char* title, int width, int height, int bp)
 		return false;
 	}
 
-	if (!world->init())
+	if (!world->init("Map1.map"))
 	{
 		printf("ERROR -- World could not be initialized\n");
 		return false;
